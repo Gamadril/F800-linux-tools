@@ -1,0 +1,22 @@
+[package]
+name = "img_tool"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[lib]
+name = "img_tool"
+path = "src/lib.rs"
+
+[[bin]]
+name = "img_tool"
+path = "src/main.rs"
+
+[dependencies]
+aw-core = { path = "../aw-core" }
+anyhow = { workspace = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+clap = { workspace = true }

@@ -1,0 +1,9 @@
+target/
+out/
+*.out/
+.idea/
+fel_switcher/target/
+dist/
+toolbox/workspace/
+docs/RELEASING.md
+dumps/

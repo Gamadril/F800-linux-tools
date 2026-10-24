@@ -1,0 +1,24 @@
+[package]
+name = "xfel_spi_nor"
+version.workspace = true
+edition.workspace = true
+description = "V851S/V853 (sun8iw21) SPI NOR read/write over USB FEL (port of xfel spinor)"
+license = "MIT"
+publish = false
+
+[lib]
+name = "xfel_spi_nor"
+path = "src/lib.rs"
+
+[[bin]]
+name = "xfel_spi_nor"
+path = "src/bin/xfel_spi_nor.rs"
+
+[dependencies]
+rusb = "0.9"
+thiserror = { workspace = true }
+clap = { workspace = true }
+
+[features]
+default = []
+vendored = ["rusb/vendored"]

@@ -1,0 +1,18 @@
+[package]
+name = "aw-core"
+version.workspace = true
+edition.workspace = true
+description = "Allwinner ARM (V851S/V853, Tina Linux) SPI NOR dump + IMAGEWTY firmware library"
+publish = false
+
+[dependencies]
+anyhow = { workspace = true }
+crc32fast = "1"
+md-5 = "0.10"
+sha1 = "0.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+backhand = "0.25"
+libc = "0.2"

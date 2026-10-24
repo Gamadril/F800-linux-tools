@@ -1,0 +1,13 @@
+[workspace]
+members = ["aw-core", "dump_tool", "img_tool", "xfel_spi_nor"]
+exclude = ["fel_switcher"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+thiserror = "2"
