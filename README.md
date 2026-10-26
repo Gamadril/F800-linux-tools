@@ -1,6 +1,6 @@
 # F800-linux-tools
 
-**F800-linux-tools** is a Rust toolkit to parse, extract, modify, and repack SPI NOR flash dumps and `IMAGEWTY` SD-card firmware update images for **Allwinner ARM Cortex-A7** devices running **Tina Linux** (specifically **V851S / V851SE / V853 (`sun8iw21`)** devices such as the **F800** CarPlay / Android Auto head unit with 16 MiB **XMC XM25QH128D** SPI NOR flash).
+**F800-linux-tools** is a Rust toolkit to parse, extract, modify, and repack SPI NOR flash dumps and `IMAGEWTY` SD-card firmware update images for **Allwinner ARM Cortex-A7** devices running **Tina Linux** (specifically **V851S / V851SE / V853 (`sun8iw21`)** devices such as the **F800** CarPlay / Android Auto head unit (also known as Bauhn/ALDI smart display for the car) with 16 MiB **XMC XM25QH128D** SPI NOR flash).
 
 Modeled after `d1s-melis-tools`, adapted for ARM Cortex-A7 (`sun8iw21`) and Tina Linux partitions.
 
@@ -28,7 +28,7 @@ Download the package for your platform from [GitHub Releases](https://github.com
 | macOS Apple Silicon | `f800-linux-tools-macos-aarch64.tar.gz` |
 | Windows x86_64 | `f800-linux-tools-windows-x86_64.zip` |
 
-Run the commands below from the extracted package directory, which contains the executables in `bin/`, helper scripts, `web/`, and `fel_switcher.bin`.
+Run the commands below from the extracted package directory, which contains the executables in `bin/`, helper scripts, and `fel_switcher.bin`.
 On Windows, run the tools in PowerShell with the `.exe` suffix, for example `.\bin\img_tool.exe`.
 Windows packages include PowerShell (`.ps1`) helpers; Linux and macOS packages include Bash (`.sh`) helpers.
 

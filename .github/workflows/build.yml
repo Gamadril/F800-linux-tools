@@ -47,15 +47,6 @@ jobs:
           name: f800-fel-switcher
           path: fel_switcher/target/fel_switcher.bin
           if-no-files-found: error
-      - uses: actions/upload-artifact@v7
-        with:
-          name: f800-bootlogo-web
-          path: |
-            dist/web/index.html
-            dist/web/app.js
-            dist/web/style.css
-            dist/web/img_tool.wasm
-          if-no-files-found: error
       - name: Upload GitHub Pages artifact
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         uses: actions/upload-pages-artifact@v4
@@ -102,24 +93,18 @@ jobs:
         with:
           name: f800-fel-switcher
           path: fel_switcher/target
-      - name: Download browser bundle
-        uses: actions/download-artifact@v8
-        with:
-          name: f800-bootlogo-web
-          path: dist/web
       - name: Package (Linux / macOS)
         if: matrix.archive == 'tar.gz'
         env:
           PACKAGE_PLATFORM: ${{ matrix.slug }}
         run: |
           PKG=dist/f800-linux-tools-${PACKAGE_PLATFORM}
-          mkdir -p "${PKG}/bin" "${PKG}/web"
+          mkdir -p "${PKG}/bin"
           cp README.md LICENSE "${PKG}/"
           cp toolbox/*.sh "${PKG}/"
           chmod +x "${PKG}"/*.sh
           cp target/release/dump_tool target/release/img_tool target/release/xfel_spi_nor "${PKG}/bin/"
           cp fel_switcher/target/fel_switcher.bin "${PKG}/"
-          cp dist/web/{index.html,app.js,style.css,img_tool.wasm} "${PKG}/web/"
           cargo metadata --locked --offline --no-deps --format-version 1 | jq -r '.packages[0].version' > "${PKG}/VERSION"
           tar -C dist -czf "${PKG}.tar.gz" "f800-linux-tools-${PACKAGE_PLATFORM}"
           (cd dist && shasum -a 256 "f800-linux-tools-${PACKAGE_PLATFORM}.tar.gz" > "f800-linux-tools-${PACKAGE_PLATFORM}.tar.gz.sha256")
@@ -129,12 +114,11 @@ jobs:
           PACKAGE_PLATFORM: ${{ matrix.slug }}
         run: |
           PKG=dist/f800-linux-tools-${PACKAGE_PLATFORM}
-          mkdir -p "${PKG}/bin" "${PKG}/web"
+          mkdir -p "${PKG}/bin"
           cp README.md LICENSE "${PKG}/"
           cp toolbox/*.ps1 "${PKG}/"
           cp target/release/dump_tool.exe target/release/img_tool.exe target/release/xfel_spi_nor.exe "${PKG}/bin/"
           cp fel_switcher/target/fel_switcher.bin "${PKG}/"
-          cp dist/web/{index.html,app.js,style.css,img_tool.wasm} "${PKG}/web/"
           cargo metadata --locked --offline --no-deps --format-version 1 | jq -r '.packages[0].version' > "${PKG}/VERSION"
           powershell -NoProfile -Command '$ErrorActionPreference = "Stop"; Compress-Archive -LiteralPath ("dist/f800-linux-tools-" + $env:PACKAGE_PLATFORM) -DestinationPath ("dist/f800-linux-tools-" + $env:PACKAGE_PLATFORM + ".zip") -Force'
           (cd dist && sha256sum "f800-linux-tools-${PACKAGE_PLATFORM}.zip" > "f800-linux-tools-${PACKAGE_PLATFORM}.zip.sha256")
