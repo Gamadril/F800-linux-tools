@@ -81,7 +81,7 @@ package.bin               # 0x010000 (448K)   sunxi-package (TOC1)
 package.bin.out/          #   optee.bin, u-boot-lzma.bin, dtb.bin
 env.bin                   # 0x080000 (128K)   U-Boot environment partition
 env.txt                   #   editable key=value U-Boot environment
-boot.bin                  # 0x0A0000 (2368K)  Android boot image
+boot.bin                  # 0x0A0000 (2368K)  Tina Linux kernel in Android boot.img format
 boot.bin.out/             #   kernel.img
 rootfs.bin                # 0x2F0000 (12736K) SquashFS (XZ) rootfs
 rootfs.bin.out/           #   extracted Linux rootfs + manifest.tsv
