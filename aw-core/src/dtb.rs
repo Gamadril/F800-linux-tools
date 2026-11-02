@@ -227,11 +227,11 @@ fn push_value(out: &mut String, v: &[u8]) {
         }
     } else if v.len().is_multiple_of(4) {
         out.push('<');
-        for (i, c) in v.chunks_exact(4).enumerate() {
+        for (i, c) in v.as_chunks::<4>().0.iter().enumerate() {
             if i > 0 {
                 out.push(' ');
             }
-            let _ = write!(out, "{:#x}", u32::from_be_bytes(c.try_into().unwrap()));
+            let _ = write!(out, "{:#x}", u32::from_be_bytes(*c));
         }
         out.push('>');
     } else {
