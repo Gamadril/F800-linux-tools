@@ -1,7 +1,7 @@
 //! Shared partition workflows used by raw dumps and IMAGEWTY items.
 use crate::{
     bootimg::BootImg,
-    bootlogo, egon,
+    bootlogo, dtb, egon,
     env::Env,
     host,
     package::{self, Package},
@@ -68,7 +68,21 @@ pub fn extract(kind: Kind, data: &[u8], file: &Path, verbose: bool) -> Result<()
             fs::create_dir(&dir)?;
             for item in &pkg.items {
                 host::safe_name(&item.name)?;
-                host::write_new(&dir.join(format!("{}.bin", item.name)), pkg.item_data(item))?;
+                let data = pkg.item_data(item);
+                host::write_new(&dir.join(format!("{}.bin", item.name)), data)?;
+                // Device trees additionally get an editable, human readable source.
+                if dtb::is_dtb(data) {
+                    match dtb::dtb_to_dts(data) {
+                        Ok(dts) => host::write_new(
+                            &dir.join(format!("{}.dts", item.name)),
+                            dts.as_bytes(),
+                        )?,
+                        Err(e) => eprintln!(
+                            "  warning: package item '{}' was not decompiled to DTS: {e:#}",
+                            item.name
+                        ),
+                    }
+                }
             }
         }
         Kind::Env => host::write_new(
@@ -121,11 +135,36 @@ pub fn rebuild(kind: Kind, file: &Path, mut raw: Vec<u8>, verbose: bool) -> Resu
             for (name, bytes) in items {
                 host::safe_name(&name)?;
                 let p = host::contained_path(&dir, &format!("{name}.bin"))?;
+                let mut replacement = None;
                 if p.is_file() {
                     let new = fs::read(p)?;
                     if new != bytes {
-                        package::replace_item(&mut raw, &name, &new)?;
+                        replacement = Some(new);
                     }
+                }
+                if dtb::is_dtb(&bytes) {
+                    let dts_path = host::contained_path(&dir, &format!("{name}.dts"))?;
+                    if dts_path.is_file() {
+                        let text = fs::read_to_string(&dts_path)
+                            .with_context(|| format!("read {}", dts_path.display()))?;
+                        let compiled = dtb::compile_if_changed(&text, &bytes)
+                            .with_context(|| format!("compile {}", dts_path.display()))?;
+                        if let Some(compiled) = compiled {
+                            if replacement.is_some() {
+                                bail!(
+                                    "package item '{name}': both {name}.bin and {name}.dts were \
+                                     modified; edit one representation"
+                                );
+                            }
+                            if verbose {
+                                println!("  compiled {}", dts_path.display());
+                            }
+                            replacement = Some(compiled);
+                        }
+                    }
+                }
+                if let Some(new) = replacement {
+                    package::replace_item(&mut raw, &name, &new)?;
                 }
             }
         }

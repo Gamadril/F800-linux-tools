@@ -4,9 +4,11 @@
 //! * [`imagewty`] – Allwinner `IMAGEWTY` update image read / write (+ cdr style md5 trailer)
 //! * [`bootlogo`] – boot logo (JPEG) helpers
 //! * [`bootimg`], [`env`], [`package`], [`squash`], [`layout`], [`egon`] – partition level formats
+//! * [`dtb`]      – device tree blob <-> readable DTS source conversion
 
 pub mod bootimg;
 pub mod bootlogo;
+pub mod dtb;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod dump;
 pub mod egon;
