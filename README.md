@@ -68,7 +68,8 @@ With either method, copy `bootlogo_update.img` to the root folder of a FAT32 SD 
 
 # Repack extracted directory back into a 16 MB SPI NOR dump
 # (Unmodified trees repack byte-for-byte identically; modified env.txt, bootlogo.jpg,
-#  boot.bin.out/kernel.img, package.bin.out/*.bin, or rootfs.bin.out/ are automatically rebuilt)
+#  boot.bin.out/kernel.img, package.bin.out/*.bin, package.bin.out/dtb.dts, or rootfs.bin.out/
+#  are automatically rebuilt)
 ./bin/dump_tool pack -v out_dump repacked.bin
 ```
 
@@ -79,6 +80,7 @@ layout.json               # Partition layout parsed from U-Boot env mtdparts
 boot0.bin                 # 0x000000 (64K)    eGON.BT0 SPL
 package.bin               # 0x010000 (448K)   sunxi-package (TOC1)
 package.bin.out/          #   optee.bin, u-boot-lzma.bin, dtb.bin
+                          #   dtb.dts: readable device tree source decompiled from dtb.bin
 env.bin                   # 0x080000 (128K)   U-Boot environment partition
 env.txt                   #   editable key=value U-Boot environment
 boot.bin                  # 0x0A0000 (2368K)  Tina Linux kernel in Android boot.img format
@@ -89,6 +91,15 @@ userdata.bin              # 0xF60000 (512K)   JFFS2 userdata partition
 bootlogo.bin              # 0xFE0000 (128K)   raw bootlogo partition
 bootlogo.jpg              #   extracted 1024x600 baseline JPEG
 ```
+
+> [!NOTE]
+> **Device tree (`dtb.dts`):** every device tree in `package.bin` is also written as editable source next to its `.bin`.
+> Edit `dtb.dts` and run `pack`: it is compiled back into the package only when its content really changed
+> (comment and formatting edits keep the original binary byte-for-byte), and the original `dtc -p` style padding is preserved.
+> Edit either `dtb.bin` or `dtb.dts`, not both (`pack` refuses), and the result must still fit the package slot.
+> The built-in compiler supports nodes, labels, `&label`/`&{/path}` references, `/bits/`, `[bytes]`, `(1 << 5)` expressions,
+> `/delete-node/`, `/delete-property/` and `&label { }` blocks (after the node defining the label);
+> `/include/`, the C preprocessor and `/plugin/` overlays are not supported.
 
 > [!NOTE]
 > **SquashFS on Windows:** Linux permissions, ownership, symbolic-link targets and special files (such as device nodes) are preserved in `rootfs.bin.out/manifest.tsv`.
